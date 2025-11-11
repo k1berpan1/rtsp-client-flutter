@@ -1,11 +1,6 @@
-
+import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -18,26 +13,18 @@ import 'package:ffmpeg_kit_flutter_new/session.dart' as ffmpeg_session;
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:intl/intl.dart';
 import 'package:rtsprep/Pages/auth/signup_screen.dart';
-import 'package:rtsprep/Pages/home_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  Supabase.initialize(
-      url: "",
-      anonKey: ""
-  );
-  MediaKit.ensureInitialized();
-  runApp(const MaterialApp(home: MyScreen()));
-}
-class MyScreen extends StatefulWidget {
-  const MyScreen({Key? key}) : super(key: key);
+
+class home_screen extends StatefulWidget {
+  const home_screen({Key? key}) : super(key: key);
+
   @override
-  State<MyScreen> createState() => MyScreenState();
+  State<home_screen> createState() => _home_screenState();
 }
 
-class MyScreenState extends State<MyScreen> {
-  /*late TextEditingController controllerforfield;
+class _home_screenState extends State<home_screen> {
+  late TextEditingController controllerforfield;
 
   late final player = Player();
   late final controller = VideoController(player);
@@ -262,25 +249,11 @@ class MyScreenState extends State<MyScreen> {
         isRecording = false;
       });
     }
-  }*/
-
-
-
-  int myIndex = 0;
-  List<Widget> widgetList = const[
-    home_screen(),
-    signup_screen()
-  ];
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('RTSP Video Recorder'),
-        backgroundColor: Colors.blue,
-      ),
-      body: Center(
-        child: widgetList[myIndex],
-      ),/*Column(
+      body: Column(
         children: [
           Container(
             margin: EdgeInsets.all(16),
@@ -330,19 +303,7 @@ class MyScreenState extends State<MyScreen> {
             setState(() => rtsplink = link);
             playerState();
           }
-        }, child: Icon(Icons.add),),*/
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.blue,
-        onTap: (index){
-          setState(() {
-            myIndex = index;
-          });
-        },
-          currentIndex: myIndex,
-          items: const[
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Главная'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Аккаунт')
-      ]),
+        }, child: Icon(Icons.add),),
     );
   }
 }
