@@ -36,13 +36,12 @@ class _signup_screenState extends State<signup_screen> {
       );
       return;
     }
-    if(!validateEmail(_emailController.text)){
+    if (!validateEmail(_emailController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Введите корректный email')),
       );
       return;
-    }
-    else if(!validatePassword(_passwordController.text)){
+    } else if (!validatePassword(_passwordController.text)) {
       return;
     }
 
@@ -57,19 +56,20 @@ class _signup_screenState extends State<signup_screen> {
       );
 
       if (response.user != null) {
-
         await showDialog<String>(
-            context: context,
-            builder: (context) =>AlertDialog(
+          context: context,
+          builder: (context) => AlertDialog(
             title: Text('Подтверждение почты'),
-            content:  Text('Вам на почту пришло письмо. Перейдите по ссылке для подтверждения пароля'),
+            content: Text(
+                'Вам на почту пришло письмо. Перейдите по ссылке для подтверждения пароля'),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.pop(context, ''),
-                  child: Text('ОК')
+                onPressed: () => Navigator.pop(context, ''),
+                child: Text('ОК'),
               ),
-            ]
-        ));
+            ],
+          ),
+        );
         widget.onToggle();
       }
     } catch (e) {
@@ -79,15 +79,16 @@ class _signup_screenState extends State<signup_screen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Неверный адрес email')),
         );
-      }
-      else{
+      } else if (errorString.contains('User already registered')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Такой пользователь уже есть')),
+        );
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorString)),
         );
         print(errorString);
       }
-
-
     } finally {
       setState(() {
         _isLoading = false;

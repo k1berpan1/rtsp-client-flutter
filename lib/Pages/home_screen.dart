@@ -176,14 +176,14 @@ class _home_screenState extends State<home_screen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                    'Добавить ссылку',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
+                  'Добавить ссылку',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 16),
                 TextField(
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'ссылка',
+                    hintText: 'rtsp://...',
                     border: OutlineInputBorder(),
                   ),
                   controller: controllerforfield,
@@ -194,16 +194,16 @@ class _home_screenState extends State<home_screen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
-                        onPressed: () => Navigator.pop(context, ''),
-                        child: Text('Отмена')
+                      onPressed: () => Navigator.pop(context, ''),
+                      child: Text('Отмена'),
                     ),
                     SizedBox(width: 8),
                     TextButton(
-                        onPressed: submit,
-                        child: Text(
-                          'Добавить',
-                          style: TextStyle(color: Colors.blue),
-                        )
+                      onPressed: submit,
+                      child: Text(
+                        'Добавить',
+                        style: TextStyle(color: Colors.blue),
+                      ),
                     ),
                   ],
                 ),
@@ -301,13 +301,13 @@ class _home_screenState extends State<home_screen> {
       return;
     }
     try {
-      await _client.from('user_link').insert({
+      // upsert: если запись с таким user_id существует, обновляем link
+      await _client.from('user_link').upsert({
         'user_id': _userId,
         'link': rtsplink,
-      });
-      print('inserted into database');
-    }
-    catch (e) {
+      }, onConflict: 'user_id');
+      print('inserted/updated in database');
+    } catch (e) {
       print('Unexpected error: $e');
     }
   }
@@ -516,22 +516,24 @@ class _home_screenState extends State<home_screen> {
         foregroundColor: Colors.white,
         onPressed: () async {
           final link = await inputrtsp();
-          if (link == null || link.isEmpty) {
+          if (link == null || link.isEmpty) return;
+
+          String cleanedLink = link.trim();
+          if (!cleanedLink.startsWith('rtsp://')) {
+            showealert('Неправильная ссылка', 'Ссылка должна начинаться с rtsp://');
             return;
           }
-          else {
-            String cleanedLink = link.trim();
-            if (!cleanedLink.startsWith('rtsp://')) {
-              showealert('Неправильная ссылка', 'Ссылка должна начинаться с rtsp://');
-              return;
-            }
 
-            setState(() {
-              rtsplink = cleanedLink;
-            });
-            await playerState();
-            await _saveData(1);
-            await insertIntoBD();
+          setState(() {
+            rtsplink = cleanedLink;
+          });
+
+          await playerState();          // обновляем видео
+          await _saveData(1);           // всегда сохраняем локально
+
+          // Если пользователь авторизован – сразу сохраняем в БД
+          if (_userId != null) {
+            await insertIntoBD();       // upsert, чтобы обновить ссылку
           }
         },
         child: Icon(Icons.add),
