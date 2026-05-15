@@ -11,8 +11,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Supabase.initialize(
-      url: "",
-      anonKey: ""
+      url: "https://essusxbgbdllcbfigxnq.supabase.co",
+      anonKey: "sb_publishable_dujHSn1l3v9u5cO7r2vCxg_2G079V-D"
   );
   MediaKit.ensureInitialized();
   runApp(const MaterialApp(home: MyScreen()));
